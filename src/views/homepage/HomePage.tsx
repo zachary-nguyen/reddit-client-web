@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import {CircularProgress, Grid, TextField} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import axios from "axios";
-import SearchResults from "../../components/homepage/results/SearchResults";
 
 const useStyles = makeStyles(() => ({
    container: {
