@@ -1,11 +1,11 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Link, CircularProgress, Grid, TextField, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import axios from "axios";
 
 const useStyles = makeStyles(() => ({
    container: {
-       height: "100vh"
+       height: "100vh",
    },
    search_bar: {
        marginTop: "20vh"
@@ -46,6 +46,26 @@ const HomePage = () => {
 
     const classes = useStyles();
 
+    const [latestReleases, setLatestReleases] = useState({
+        mac: "",
+        windows: "",
+        linux: ""
+    })
+    useEffect(() => {
+        axios.get("https://api.github.com/repos/zachary-nguyen/electron-reddit/releases/latest")
+            .then(res => {
+                const assets = res.data.assets;
+                const version = res.data.name;
+                setLatestReleases(
+                    {
+                        mac: assets.find((x:any) => x.name === `Reddit-Client-${version}.dmg`).browser_download_url,
+                        windows: assets.find((x:any) => x.name === `Reddit-Client-Setup-${version}.exe`).browser_download_url,
+                        linux: assets.find((x:any) => x.name === `Reddit-Client-${version}.msi`).browser_download_url
+                    }
+                )
+            })
+            .catch(e => {})
+    },[])
 
     return (
         <Grid direction={"column"}
@@ -76,9 +96,9 @@ const HomePage = () => {
                     </Typography>
                 </Grid>
                 <Grid className={classes.button_container} justify={"center"} container direction={"row"}>
-                    <Button className={classes.button}>Windows</Button>
-                    <Button className={classes.button}> Mac </Button>
-                    <Button className={classes.button}> Linux </Button>
+                    <Button download href={latestReleases.windows} className={classes.button}>Windows</Button>
+                    <Button download href={latestReleases.mac} className={classes.button}> Mac </Button>
+                    <Button download href={latestReleases.linux} className={classes.button}> Linux </Button>
                 </Grid>
                 <Grid justify={"center"} container>
                     <Link className={classes.link} href={"https://github.com/zachary-nguyen/electron-reddit"}> View source code </Link>
